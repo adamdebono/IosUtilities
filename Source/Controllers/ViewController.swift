@@ -23,4 +23,14 @@ open class ViewController: UIViewController,
             self.checkUserInterfaceStyleTraits(from: previousTraitCollection)
         }
     }
+
+    // MARK: - Popover
+
+    @available(tvOS, unavailable)
+    open func prepareForPopover() {}
+
+    @available(tvOS, unavailable)
+    open var popoverArrowDirections: UIPopoverArrowDirection {
+        return .any
+    }
 }
