@@ -36,7 +36,12 @@ open class ViewController: UIViewController,
         }
     }
 
-    open func viewWillFirstAppear(_ animated: Bool) {}
+    open func viewWillFirstAppear(_ animated: Bool) {
+        if let dataLoadable = self as? DataLoadable {
+            dataLoadable.loadCachedData()
+            dataLoadable.displayLoadedData()
+        }
+    }
     open func viewWillPeek() {}
     open func viewWillPop() {}
 
@@ -60,6 +65,10 @@ open class ViewController: UIViewController,
                 self.viewDidPop()
             }
         }
+
+        if let dataLoadable = self as? DataLoadable {
+            dataLoadable.updateDataIfNeeded()
+        }
     }
 
     open func viewDidFirstAppear(_ animated: Bool) {}
@@ -70,6 +79,11 @@ open class ViewController: UIViewController,
         super.viewWillDisappear(animated)
 
         self.viewIsActive = false
+
+        if let dataLoadable = self as? DataLoadable {
+            dataLoadable.cancelDataRequest()
+            dataLoadable.cancelDataExpiryTimer()
+        }
     }
 
     // MARK: - Traits
@@ -126,4 +140,24 @@ open class ViewController: UIViewController,
     open func prepareForPreviewing() {
         self.viewIsPreviewing = true
     }
+
+    // MARK: - Data Loadable
+
+    public var isDataActive: Bool {
+        return self.viewIsActive
+    }
+
+    var loadedDataExpiry: Date? {
+        didSet {
+            if let dataLoadable = self as? DataLoadable {
+                dataLoadable.updateDataExpiryTimer()
+            }
+        }
+    }
+    var isDataExpired: Bool {
+        guard let loadedDataExpiry = self.loadedDataExpiry else { return true }
+        return loadedDataExpiry.isPast
+    }
+
+    public var dataExpiryTimer: Timer?
 }
