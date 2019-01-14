@@ -50,6 +50,8 @@ open class ViewController: UIViewController,
 
         self.viewIsActive = true
 
+        self.updateUserActivity()
+
         if !self.viewHasAppeared {
             self.viewHasAppeared = true
 
@@ -83,6 +85,20 @@ open class ViewController: UIViewController,
         if let dataLoadable = self as? DataLoadable {
             dataLoadable.cancelDataRequest()
             dataLoadable.cancelDataExpiryTimer()
+        }
+    }
+
+    // MARK: - Activity
+
+    public func updateUserActivity() {
+        if let activity = self.userActivity {
+            activity.invalidate()
+            self.userActivity = nil
+        }
+
+        if let activities = self as? UIViewControllerActivities, let activity = activities.createUserActivity() {
+            self.userActivity = activity
+            activity.becomeCurrent()
         }
     }
 
@@ -147,14 +163,14 @@ open class ViewController: UIViewController,
         return self.viewIsActive
     }
 
-    var loadedDataExpiry: Date? {
+    public var loadedDataExpiry: Date? {
         didSet {
             if let dataLoadable = self as? DataLoadable {
                 dataLoadable.updateDataExpiryTimer()
             }
         }
     }
-    var isDataExpired: Bool {
+    open var isDataExpired: Bool {
         guard let loadedDataExpiry = self.loadedDataExpiry else { return true }
         return loadedDataExpiry.isPast
     }
