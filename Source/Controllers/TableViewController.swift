@@ -1,5 +1,7 @@
 import UIKit
 
+private let ContentSizeKeyPath = "contentSize"
+
 open class TableViewController: ViewController,
     UITableViewDataSource, UITableViewDelegate {
 
@@ -15,11 +17,23 @@ open class TableViewController: ViewController,
 
         self.tableView.dataSource = self
         self.tableView.delegate = self
+
+        self.tableView.addObserver(self, forKeyPath: ContentSizeKeyPath, options: [.new], context: nil)
     }
 
     public required init?(coder aDecoder: NSCoder) {
         // TODO
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        self.tableView.removeObserver(self, forKeyPath: ContentSizeKeyPath)
+    }
+
+    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == ContentSizeKeyPath {
+            self.timePreferredContentSize()
+        }
     }
 
     // MARK: - View Lifecycle
@@ -50,6 +64,8 @@ open class TableViewController: ViewController,
                 }
             }
         }
+
+        self.updatePreferredContentSize()
     }
 
     #if !os(tvOS)
@@ -61,6 +77,33 @@ open class TableViewController: ViewController,
         self.tableView.separatorEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: .prominent))
     }
     #endif
+
+    // MARK: - Layout
+
+    private var preferredContentSizeTimer: Timer? = nil
+    private func timePreferredContentSize() {
+        if let preferredContentSizeTimer = self.preferredContentSizeTimer {
+            preferredContentSizeTimer.invalidate()
+        }
+
+        self.preferredContentSizeTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false, block: { [weak self] (timer) in
+            guard let self = self else { return }
+            self.updatePreferredContentSize()
+            self.preferredContentSizeTimer = nil
+        })
+    }
+
+    public func updatePreferredContentSize() {
+        self.preferredContentSize = self.calculatePreferredContentSize()
+    }
+    open func calculatePreferredContentSize() -> CGSize {
+        let screenSize = UIScreen.main.bounds.size
+        let contentSize = self.tableView.contentSize
+        return CGSize(
+            width: min(screenSize.width, max(320, contentSize.width)),
+            height: min(screenSize.height, min(44, contentSize.height))
+        )
+    }
 
     // MARK: - Table View
 
