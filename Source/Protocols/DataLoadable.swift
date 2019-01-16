@@ -62,14 +62,14 @@ extension DataLoadable {
 
         self.dataDidBeginLoading()
         self.requestData { (result) in
+            self.dataDidEndLoading()
+
             switch result {
             case .success:
                 self.displayLoadedData()
             case .failure:
                 self.displayLoadFailure()
             }
-
-            self.dataDidEndLoading()
         }
     }
 }

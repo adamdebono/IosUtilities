@@ -165,7 +165,6 @@ open class TableViewController: ViewController,
     // MARK: - 3D Touch Previewing
 
     open override func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        print("check previewing view controller")
         let position = self.tableView.convert(location, from: self.view)
         guard let indexPath = self.tableView.indexPathForRow(at: position) else { return nil }
         guard let cell = self.tableView.cellForRow(at: indexPath) as? _TableViewCell else { return nil }
@@ -173,12 +172,9 @@ open class TableViewController: ViewController,
         previewingContext.sourceRect = self.view.convert(cell._cell.frame, from: cell._cell.superview)
 
         guard let previewingViewController = cell.previewingContext(previewingContext, viewControllerForLocation: location) else { return nil }
-        print(previewingViewController)
         guard let previewable = previewingViewController as? UIViewControllerPreviewable else { return nil }
         guard previewable.canBePreviewed else { return nil }
         previewable.prepareForPreviewing()
-
-        print("prepare for previewing")
 
         return previewingViewController
     }
