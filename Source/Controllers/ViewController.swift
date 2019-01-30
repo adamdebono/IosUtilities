@@ -195,4 +195,20 @@ open class ViewController: UIViewController,
         activityIndicatorController.dismiss(animated: true, completion: completion)
         self.activityIndicatorController = nil
     }
+
+    // MARK: - Status Bar
+
+    #if os(iOS)
+    
+    public var showStatusBar: Bool = true {
+        didSet {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
+    override open var prefersStatusBarHidden: Bool {
+        return !self.showStatusBar
+    }
+
+    #endif
 }
