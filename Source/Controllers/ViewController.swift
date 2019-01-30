@@ -176,4 +176,23 @@ open class ViewController: UIViewController,
     }
 
     public var dataExpiryTimer: Timer?
+
+    // MARK: - Loading UI
+
+    public var activityIndicatorController: UIViewController? = nil
+
+    open func showModalLoadingUI(completion: (() -> Void)? = nil) {
+        guard self.activityIndicatorController == nil else { return }
+
+        let activityIndicatorController = ActivityIndicatorController()
+        self.present(activityIndicatorController, animated: true, completion: completion)
+        self.activityIndicatorController = activityIndicatorController
+    }
+
+    open func hideModalLoadingUI(completion: (() -> Void)? = nil) {
+        guard let activityIndicatorController = self.activityIndicatorController else { return }
+
+        activityIndicatorController.dismiss(animated: true, completion: completion)
+        self.activityIndicatorController = nil
+    }
 }
