@@ -88,6 +88,12 @@ open class ViewController: UIViewController,
         }
     }
 
+    #if os(tvOS)
+
+    open func viewWillExit() {}
+
+    #endif
+
     // MARK: - Activity
 
     public func updateUserActivity() {
@@ -208,6 +214,26 @@ open class ViewController: UIViewController,
 
     override open var prefersStatusBarHidden: Bool {
         return !self.showStatusBar
+    }
+
+    #endif
+
+    // MARK: - Gestures
+
+    #if os(tvOS)
+
+    public func setupMenuPressGesture() {
+        let menuPressGesture = UITapGestureRecognizer()
+        menuPressGesture.allowedPressTypes = [NSNumber(value: UIPress.PressType.menu.rawValue)]
+        menuPressGesture.addTarget(self, action: #selector(menuGesturePressed(sender:)))
+        self.view.addGestureRecognizer(menuPressGesture)
+    }
+
+    @objc
+    private func menuGesturePressed(sender: UITapGestureRecognizer) {
+        self.viewWillExit()
+
+        self.popOrDismiss(animated: true)
     }
 
     #endif
