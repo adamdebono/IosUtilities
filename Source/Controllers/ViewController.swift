@@ -14,6 +14,7 @@ open class ViewController: UIViewController,
     open override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.setupKeyCommands()
         self.updateFonts()
         self.updateUserInterfaceStyle()
     }
@@ -217,6 +218,25 @@ open class ViewController: UIViewController,
     }
 
     #endif
+
+    // MARK: - Keyboard Commands
+
+    open func setupKeyCommands() {}
+
+    @discardableResult
+    public func addKeyCommand(input: String, modifierFlags: UIKeyModifierFlags, action: Selector, discoverabilityTitle: String? = nil) -> UIKeyCommand {
+        let command: UIKeyCommand
+
+        if let discoverabilityTitle = discoverabilityTitle {
+            command = UIKeyCommand(input: input, modifierFlags: modifierFlags, action: action, discoverabilityTitle: discoverabilityTitle)
+        } else {
+            command = UIKeyCommand(input: input, modifierFlags: modifierFlags, action: action)
+        }
+
+        self.addKeyCommand(command)
+
+        return command
+    }
 
     // MARK: - Gestures
 

@@ -28,6 +28,8 @@ protocol _TableViewCell: class {
     var viewController: TableViewController? { get set }
     var _cell: UITableViewCell { get }
 
+    var isFocusedCell: Bool { get set }
+
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController?
 }
 extension _TableViewCell where Self: UITableViewCell {
@@ -44,6 +46,7 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        self.setupFocusedCellView()
         self.updateFonts()
         self.updateUserInterfaceStyle()
     }
@@ -51,6 +54,7 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
+        self.setupFocusedCellView()
         self.updateFonts()
         self.updateUserInterfaceStyle()
     }
@@ -86,6 +90,40 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
         self.checkFontTraits(from: previousTraitCollection)
         if #available(iOS 12.0, *) {
             self.checkUserInterfaceStyleTraits(from: previousTraitCollection)
+        }
+    }
+
+    // MARK: - Focus
+
+    public private(set) var focusedCellView = UIView()
+    open func setupFocusedCellView() {
+        self.focusedCellView.alpha = 0
+        self.focusedCellView.layer.borderColor = UIColor.black.cgColor
+        self.focusedCellView.layer.borderWidth = 2
+
+        self.focusedCellView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.focusedCellView)
+        self.sendSubviewToBack(self.focusedCellView)
+
+        self.addConstraints([
+            NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: self.focusedCellView, attribute: .top, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: self, attribute: .leading, relatedBy: .equal, toItem: self.focusedCellView, attribute: .leading, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal, toItem: self.focusedCellView, attribute: .trailing, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .equal, toItem: self.focusedCellView, attribute: .bottom, multiplier: 1, constant: 0),
+        ])
+    }
+
+    public internal(set) var isFocusedCell: Bool = false {
+        didSet {
+            self.didChangeFocus()
+        }
+    }
+
+    open func didChangeFocus() {
+        if self.isFocusedCell {
+            self.focusedCellView.alpha = 1
+        } else {
+            self.focusedCellView.alpha = 0
         }
     }
 

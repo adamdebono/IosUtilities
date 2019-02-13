@@ -26,7 +26,6 @@ open class ActivityIndicatorController: UIAlertController {
         let activityIndicator = self.createIndicator()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(activityIndicator)
-//        activityIndicator.startAnimating()
 
         self.addConstraints(toIndicator: activityIndicator)
     }

@@ -55,12 +55,24 @@ open class TableViewController: ViewController,
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let selectedIndexPath = self.tableView.indexPathForSelectedRow, let transitionCoordinator = self.transitionCoordinator {
-            transitionCoordinator.animate(alongsideTransition: { (context) in
-                self.tableView.deselectRow(at: selectedIndexPath, animated: true)
-            }) { (context) in
-                if context.isCancelled {
-                    self.tableView.selectRow(at: selectedIndexPath, animated: false, scrollPosition: .none)
+        if let transitionCoordinator = self.transitionCoordinator {
+            if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
+                transitionCoordinator.animate(alongsideTransition: { (context) in
+                    self.tableView.deselectRow(at: selectedIndexPath, animated: true)
+                }) { (context) in
+                    if context.isCancelled {
+                        self.tableView.selectRow(at: selectedIndexPath, animated: false, scrollPosition: .none)
+                    }
+                }
+            }
+
+            if let focusedIndexPath = self.tableView.focusedIndexPath {
+                transitionCoordinator.animate(alongsideTransition: { (context) in
+                    self.tableView.focus(indexPath: nil, animated: true)
+                }) { (context) in
+                    if context.isCancelled {
+                        self.tableView.focus(indexPath: focusedIndexPath, animated: true)
+                    }
                 }
             }
         }
@@ -83,6 +95,7 @@ open class TableViewController: ViewController,
 
         if viewControllerToPresent.modalPresentationStyle == .formSheet || viewControllerToPresent.modalPresentationStyle == .pageSheet, let selectedIndexPath = self.tableView.indexPathForSelectedRow {
             self.tableView.deselectRow(at: selectedIndexPath, animated: true)
+            self.tableView.focus(indexPath: nil, animated: true)
         }
     }
 
@@ -111,6 +124,12 @@ open class TableViewController: ViewController,
             width: min(screenSize.width, max(320, contentSize.width)),
             height: min(screenSize.height, min(44, contentSize.height))
         )
+    }
+
+    // MARK: - Scroll View
+
+    open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.tableView.focus(indexPath: nil, animated: false)
     }
 
     // MARK: - Table View
@@ -161,6 +180,12 @@ open class TableViewController: ViewController,
         return cell
     }
 
+    open func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let cell = cell as? _TableViewCell {
+            cell.isFocusedCell = (indexPath == self.tableView.focusedIndexPath)
+        }
+    }
+
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let model = self.tableView(tableView, viewModelForRowAt: indexPath)
         if let viewController = model.tableViewController(self, selectionViewControllerForIndexPath: indexPath) {
@@ -185,5 +210,56 @@ open class TableViewController: ViewController,
         previewable.prepareForPreviewing()
 
         return previewingViewController
+    }
+
+    // MARK: - Keyboard Commands
+
+    open override func setupKeyCommands() {
+        super.setupKeyCommands()
+
+        self.addKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [.command], action: #selector(keyboardPressedTop(sender:)))
+        self.addKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(keyboardPressedUp(sender:)))
+        self.addKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(keyboardPressedDown(sender:)))
+        self.addKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [.command], action: #selector(keyboardPressedBottom(sender:)))
+
+        self.addKeyCommand(input: "\r", modifierFlags: [], action: #selector(keyboardPressedEnter(sender:)))
+        self.addKeyCommand(input: " ", modifierFlags: [], action: #selector(keyboardPressedSpace(sender:)))
+
+        self.addKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(keyboardPressedEscape(sender:)))
+    }
+
+    @objc
+    open func keyboardPressedTop(sender: UIKeyCommand) {
+        self.tableView.moveFocusTop()
+    }
+
+    @objc
+    open func keyboardPressedUp(sender: UIKeyCommand) {
+        self.tableView.moveFocusUp()
+    }
+
+    @objc
+    open func keyboardPressedDown(sender: UIKeyCommand) {
+        self.tableView.moveFocusDown()
+    }
+
+    @objc
+    open func keyboardPressedBottom(sender: UIKeyCommand) {
+        self.tableView.moveFocusBottom()
+    }
+
+    @objc
+    open func keyboardPressedEnter(sender: UIKeyCommand) {
+        self.tableView.selectFocusedCell()
+    }
+
+    @objc
+    open func keyboardPressedSpace(sender: UIKeyCommand) {
+        self.tableView.selectFocusedCell()
+    }
+
+    @objc
+    open func keyboardPressedEscape(sender: UIKeyCommand) {
+        self.tableView.focus(indexPath: nil, animated: true)
     }
 }
