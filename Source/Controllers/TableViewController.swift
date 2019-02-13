@@ -78,6 +78,14 @@ open class TableViewController: ViewController,
     }
     #endif
 
+    open override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
+
+        if viewControllerToPresent.modalPresentationStyle == .formSheet || viewControllerToPresent.modalPresentationStyle == .pageSheet, let selectedIndexPath = self.tableView.indexPathForSelectedRow {
+            self.tableView.deselectRow(at: selectedIndexPath, animated: true)
+        }
+    }
+
     // MARK: - Layout
 
     private var preferredContentSizeTimer: Timer? = nil
