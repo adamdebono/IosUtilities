@@ -28,7 +28,9 @@ protocol _TableViewCell: class {
     var viewController: TableViewController? { get set }
     var _cell: UITableViewCell { get }
 
+    #if !os(tvOS)
     var isFocusedCell: Bool { get set }
+    #endif
 
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController?
 }
@@ -46,7 +48,9 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        #if !os(tvOS)
         self.setupFocusedCellView()
+        #endif
         self.updateFonts()
         self.updateUserInterfaceStyle()
     }
@@ -54,7 +58,9 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
+        #if !os(tvOS)
         self.setupFocusedCellView()
+        #endif
         self.updateFonts()
         self.updateUserInterfaceStyle()
     }
@@ -95,6 +101,8 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
 
     // MARK: - Focus
 
+    #if !os(tvOS)
+
     public private(set) var focusedCellView = UIView()
     open func setupFocusedCellView() {
         self.focusedCellView.alpha = 0
@@ -126,6 +134,8 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
             self.focusedCellView.alpha = 0
         }
     }
+
+    #endif
 
     // MARK: - 3D Touch Previewing
 

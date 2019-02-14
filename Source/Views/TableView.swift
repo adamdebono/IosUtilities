@@ -37,6 +37,8 @@ public class TableView: UITableView {
 
     // MARK: - Focus
 
+    #if !os(tvOS)
+
     public private(set) var focusedIndexPath: IndexPath?
 
     public func focus(indexPath: IndexPath?, animated: Bool) {
@@ -147,4 +149,6 @@ public class TableView: UITableView {
         let indexPath = IndexPath(row: row, section: section)
         self.focus(indexPath: indexPath, animated: true)
     }
+
+    #endif
 }

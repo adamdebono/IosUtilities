@@ -66,6 +66,7 @@ open class TableViewController: ViewController,
                 }
             }
 
+            #if !os(tvOS)
             if let focusedIndexPath = self.tableView.focusedIndexPath {
                 transitionCoordinator.animate(alongsideTransition: { (context) in
                     self.tableView.focus(indexPath: nil, animated: true)
@@ -75,6 +76,7 @@ open class TableViewController: ViewController,
                     }
                 }
             }
+            #endif
         }
 
         self.updatePreferredContentSize()
@@ -90,6 +92,7 @@ open class TableViewController: ViewController,
     }
     #endif
 
+    #if !os(tvOS)
     open override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         super.present(viewControllerToPresent, animated: flag, completion: completion)
 
@@ -98,6 +101,7 @@ open class TableViewController: ViewController,
             self.tableView.focus(indexPath: nil, animated: true)
         }
     }
+    #endif
 
     // MARK: - Layout
 
@@ -128,9 +132,13 @@ open class TableViewController: ViewController,
 
     // MARK: - Scroll View
 
+    #if !os(tvOS)
+
     open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.tableView.focus(indexPath: nil, animated: false)
     }
+
+    #endif
 
     // MARK: - Table View
 
@@ -180,11 +188,15 @@ open class TableViewController: ViewController,
         return cell
     }
 
+    #if !os(tvOS)
+
     open func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let cell = cell as? _TableViewCell {
             cell.isFocusedCell = (indexPath == self.tableView.focusedIndexPath)
         }
     }
+
+    #endif
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let model = self.tableView(tableView, viewModelForRowAt: indexPath)
@@ -213,6 +225,8 @@ open class TableViewController: ViewController,
     }
 
     // MARK: - Keyboard Commands
+
+    #if !os(tvOS)
 
     open override func setupKeyCommands() {
         super.setupKeyCommands()
@@ -262,4 +276,6 @@ open class TableViewController: ViewController,
     open func keyboardPressedEscape(sender: UIKeyCommand) {
         self.tableView.focus(indexPath: nil, animated: true)
     }
+
+    #endif
 }
