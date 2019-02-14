@@ -126,7 +126,7 @@ open class TableViewController: ViewController,
         let contentSize = self.tableView.contentSize
         return CGSize(
             width: min(screenSize.width, max(320, contentSize.width)),
-            height: min(screenSize.height, min(44, contentSize.height))
+            height: min(screenSize.height, max(44, contentSize.height))
         )
     }
 
