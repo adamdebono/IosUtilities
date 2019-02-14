@@ -106,8 +106,7 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
     public private(set) var focusedCellView = UIView()
     open func setupFocusedCellView() {
         self.focusedCellView.alpha = 0
-        self.focusedCellView.layer.borderColor = UIColor.black.cgColor
-        self.focusedCellView.layer.borderWidth = 2
+        self.focusedCellView.backgroundColor = .lightGray
 
         self.focusedCellView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(self.focusedCellView)
