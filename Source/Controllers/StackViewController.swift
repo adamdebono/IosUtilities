@@ -1,16 +1,23 @@
 import UIKit
 
-open class StackViewController: ViewController {
+open class StackViewController: ViewController, ScrollViewController {
 
     public let scrollView = UIScrollView()
     public let stackView = StackView()
 
-    public override init() {
+    public let usesFullWidth: Bool
+    public let verticallyPadded: Bool
+
+    public init(usesFullWidth: Bool = false, verticallyPadded: Bool = false) {
+        self.usesFullWidth = usesFullWidth
+        self.verticallyPadded = verticallyPadded
+
         super.init()
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        // TODO
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - View Lifecycle
@@ -54,6 +61,10 @@ open class StackViewController: ViewController {
         ])
 
         self.scrollView.addConstraint(NSLayoutConstraint(item: self.scrollView, attribute: .width, relatedBy: .equal, toItem: self.stackView, attribute: .width, multiplier: 1, constant: 0))
+    }
+
+    public var scrollViewContentSize: CGSize {
+        return self.stackView.bounds.size
     }
 
     // MARK: - Stack

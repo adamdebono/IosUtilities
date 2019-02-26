@@ -2,15 +2,23 @@ import UIKit
 
 private let ContentSizeKeyPath = "contentSize"
 
-open class TableViewController: ViewController,
+open class TableViewController: ViewController, ScrollViewController,
     UITableViewDataSource, UITableViewDelegate {
 
+    public var scrollView: UIScrollView {
+        return self.tableView
+    }
     public let tableView: TableView
 
+    public let usesFullWidth: Bool
+    public let verticallyPadded: Bool
     public let usesFullHeight: Bool
 
-    public init(style: UITableView.Style = .plain, usesFullHeight: Bool = false) {
+    public init(style: UITableView.Style = .plain, usesFullWidth: Bool = false, verticallyPadded: Bool = false, usesFullHeight: Bool = false) {
+        self.usesFullWidth = usesFullWidth
+        self.verticallyPadded = verticallyPadded
         self.usesFullHeight = usesFullHeight
+
         self.tableView = TableView(frame: .zero, style: style, usesFullHeight: usesFullHeight)
 
         super.init()
@@ -94,6 +102,10 @@ open class TableViewController: ViewController,
     }
 
     #endif
+
+    public var scrollViewContentSize: CGSize {
+        return self.tableView.contentSize
+    }
 
     // MARK: - Popover
 

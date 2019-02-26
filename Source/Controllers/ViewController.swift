@@ -5,6 +5,8 @@ public protocol ViewControllerExtensions {
     func extend_viewDidLoad()
     func extend_viewDidAppear(animated: Bool)
 
+    func extend_additionalContentInset(forScrollView scrollView: UIScrollView) -> UIEdgeInsets
+
     #if !os(tvOS)
     func extend_prepareForPopover()
     #endif
@@ -40,6 +42,18 @@ open class ViewController: UIViewController,
         self.updateFonts()
         self.updateUserInterfaceStyle()
 
+        if let scrollViewController = self as? ScrollViewController {
+            if scrollViewController.usesFullWidth {
+                if #available(iOS 11.0, tvOS 11.0, *) {
+                    self.viewRespectsSystemMinimumLayoutMargins = false
+                    scrollViewController.scrollView.insetsLayoutMarginsFromSafeArea = false
+                }
+            }
+
+            scrollViewController.updateContentInset()
+        }
+
+        (self as? ScrollViewController)?.updateContentInset()
         (self as? ViewControllerExtensions)?.extend_viewDidLoad()
     }
 
@@ -115,11 +129,30 @@ open class ViewController: UIViewController,
         }
     }
 
+    @available(iOS 11.0, tvOS 11.0, *)
+    open override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+
+        (self as? ScrollViewController)?.updateContentInset()
+    }
+
+    open override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if let scrollViewController = self as? ScrollViewController, scrollViewController.verticallyPadded {
+            scrollViewController.updateContentInset()
+        }
+    }
+
     #if os(tvOS)
 
     open func viewWillExit() {}
 
     #endif
+
+    open func additionalContentInset(forScrollView scrollView: UIScrollView) -> UIEdgeInsets {
+        return .zero
+    }
 
     // MARK: - Activity
 
