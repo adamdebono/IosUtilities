@@ -13,7 +13,7 @@ open class TableViewController: ViewController,
         self.usesFullHeight = usesFullHeight
         self.tableView = TableView(frame: .zero, style: style, usesFullHeight: usesFullHeight)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.tableView.dataSource = self
         self.tableView.delegate = self
@@ -83,16 +83,7 @@ open class TableViewController: ViewController,
     }
 
     #if !os(tvOS)
-    open override func prepareForPopover() {
-        super.prepareForPopover()
 
-        self.tableView.backgroundColor = .clear
-        self.tableView.alwaysBounceVertical = false
-        self.tableView.separatorEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: .prominent))
-    }
-    #endif
-
-    #if !os(tvOS)
     open override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         super.present(viewControllerToPresent, animated: flag, completion: completion)
 
@@ -101,6 +92,21 @@ open class TableViewController: ViewController,
             self.tableView.focus(indexPath: nil, animated: true)
         }
     }
+
+    #endif
+
+    // MARK: - Popover
+
+    #if !os(tvOS)
+
+    open override func prepareForPopover() {
+        super.prepareForPopover()
+
+        self.tableView.backgroundColor = .clear
+        self.tableView.alwaysBounceVertical = false
+        self.tableView.separatorEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: .prominent))
+    }
+
     #endif
 
     // MARK: - Layout

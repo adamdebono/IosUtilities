@@ -9,7 +9,7 @@ open class CollectionViewController: ViewController, CollectionViewModelDelegate
         self.collectionViewLayout = collectionViewLayout
         self.collectionView = CollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.collectionView.dataSource = self
         self.collectionView.delegate = self

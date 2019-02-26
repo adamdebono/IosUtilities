@@ -1,8 +1,30 @@
 import UIKit
 
+public protocol ViewControllerExtensions {
+    func extend_init()
+    func extend_viewDidLoad()
+    func extend_viewDidAppear(animated: Bool)
+
+    #if !os(tvOS)
+    func extend_prepareForPopover()
+    #endif
+}
+
 open class ViewController: UIViewController,
     FontTraitEnvironment, UserInterfaceStyleTraitEnvironment,
     UIViewControllerPreviewingDelegate {
+
+    public init() {
+        super.init(nibName: nil, bundle: nil)
+
+        (self as? ViewControllerExtensions)?.extend_init()
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+
+        (self as? ViewControllerExtensions)?.extend_init()
+    }
 
     // MARK: - View Lifecycle
 
@@ -17,6 +39,8 @@ open class ViewController: UIViewController,
         self.setupKeyCommands()
         self.updateFonts()
         self.updateUserInterfaceStyle()
+
+        (self as? ViewControllerExtensions)?.extend_viewDidLoad()
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -35,6 +59,8 @@ open class ViewController: UIViewController,
                 self.viewWillPop()
             }
         }
+
+        (self as? ViewControllerExtensions)?.extend_viewDidAppear(animated: animated)
     }
 
     open func viewWillFirstAppear(_ animated: Bool) {
@@ -127,13 +153,17 @@ open class ViewController: UIViewController,
 
     // MARK: - Popover
 
-    @available(tvOS, unavailable)
-    open func prepareForPopover() {}
+    #if !os(tvOS)
 
-    @available(tvOS, unavailable)
+    open func prepareForPopover() {
+        (self as? ViewControllerExtensions)?.extend_prepareForPopover()
+    }
+
     open var popoverArrowDirections: UIPopoverArrowDirection {
         return .any
     }
+
+    #endif
 
     // MARK: - Previewing
 

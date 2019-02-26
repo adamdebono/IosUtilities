@@ -2,7 +2,8 @@ import UIKit
 
 // MARK: - Popover
 
-@available(tvOS, unavailable)
+#if !os(tvOS)
+
 extension UIViewController: UIPopoverPresentationControllerDelegate {
 
     public func presentPopover(_ viewController: UIViewController, from view: UIView) {
@@ -46,3 +47,5 @@ extension UIViewController: UIPopoverPresentationControllerDelegate {
         return .none
     }
 }
+
+#endif

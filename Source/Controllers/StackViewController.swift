@@ -5,8 +5,8 @@ open class StackViewController: ViewController {
     public let scrollView = UIScrollView()
     public let stackView = StackView()
 
-    public init() {
-        super.init(nibName: nil, bundle: nil)
+    public override init() {
+        super.init()
     }
 
     required public init?(coder aDecoder: NSCoder) {
