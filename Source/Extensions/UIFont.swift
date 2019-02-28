@@ -2,6 +2,18 @@ import UIKit
 
 extension UIFont {
 
+    private struct Holder {
+        static var _preferredFontName: String? = nil
+    }
+    public static var preferredFontName: String? {
+        get {
+            return Holder._preferredFontName
+        }
+        set {
+            Holder._preferredFontName = newValue
+        }
+    }
+
     // MARK: - Alternative Styles
 
     public var monospacedDigitFont: UIFont {
@@ -38,6 +50,13 @@ extension UIFont {
     public class func preferredFont(_ fontName: String, forTextStyle textStyle: UIFont.TextStyle) -> UIFont {
         return self.font(fontName, forTextStyle: textStyle, compatibleWith: nil)
     }
+    public class func preferred(forTextStyle textStyle: UIFont.TextStyle) -> UIFont {
+        if let preferredFontName = self.preferredFontName {
+            return self.preferredFont(preferredFontName, forTextStyle: textStyle)
+        } else {
+            return UIFont.preferredFont(forTextStyle: textStyle)
+        }
+    }
 
     public class func fixedFontSize(forTextStyle textStyle: UIFont.TextStyle) -> CGFloat {
         let traitCollection = UITraitCollection(preferredContentSizeCategory: .large)
@@ -46,5 +65,13 @@ extension UIFont {
     public class func fixedFont(_ fontName: String, forTextStyle textStyle: UIFont.TextStyle) -> UIFont {
         let traitCollection = UITraitCollection(preferredContentSizeCategory: .large)
         return self.font(fontName, forTextStyle: textStyle, compatibleWith: traitCollection)
+    }
+    public class func fixed(forTextStyle textStyle: UIFont.TextStyle) -> UIFont {
+        if let preferredFontName = self.preferredFontName {
+            return self.fixedFont(preferredFontName, forTextStyle: textStyle)
+        } else {
+            let traitCollection = UITraitCollection(preferredContentSizeCategory: .large)
+            return UIFont.preferredFont(forTextStyle: textStyle, compatibleWith: traitCollection)
+        }
     }
 }
