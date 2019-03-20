@@ -62,6 +62,7 @@ open class TableViewController: ViewController, ScrollViewController,
 
     open override func viewDidLoad() {
         self.tableView.register(TextTableHeaderView.self, forHeaderFooterViewReuseIdentifier: TextTableHeaderView.TableViewReuseIdentifier)
+        self.tableView.register(TextTableFooterView.self, forHeaderFooterViewReuseIdentifier: TextTableFooterView.TableViewReuseIdentifier)
 
         super.viewDidLoad()
     }
@@ -205,24 +206,64 @@ open class TableViewController: ViewController, ScrollViewController,
     }
 
     open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if let headerTitle = self.tableView(tableView, textForHeaderInSection: section) {
-            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TextTableHeaderView.TableViewReuseIdentifier) as? TextTableHeaderView else {
-                return nil
-            }
-
-            #if os(iOS)
-            headerView.titleLabel.text = headerTitle.uppercased()
-            #else
-            headerView.titleLabel.text = headerTitle
-            #endif
-
-            return headerView
+        guard let headerTitle = self.tableView(tableView, textForHeaderInSection: section) else { return nil }
+        guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TextTableHeaderView.TableViewReuseIdentifier) as? TextTableHeaderView else {
+            return nil
         }
 
-        return nil
+        #if os(iOS)
+        headerView.titleLabel.text = headerTitle.uppercased()
+        #else
+        headerView.titleLabel.text = headerTitle
+        #endif
+
+        return headerView
     }
 
     public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let view = view as? TableHeaderFooterView {
+            view.willDisplay(inTableView: tableView, usesFullWidth: self.usesFullWidth)
+        }
+    }
+
+    // MARK: Footer
+
+    public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return nil
+    }
+
+    open func tableView(_ tableView: UITableView, textForFooterInSection section: Int) -> String? {
+        return nil
+    }
+
+    open func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        #if os(tvOS)
+        if self.tableView(tableView, textForFooterInSection: section) != nil {
+            return UITableView.automaticDimension
+        } else {
+            return 0.5
+        }
+        #else
+        return UITableView.automaticDimension
+        #endif
+    }
+
+    public func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+        return TextTableFooterView.estimatedHeight
+    }
+
+    public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard let footerTitle = self.tableView(tableView, textForFooterInSection: section) else { return nil }
+        guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TextTableFooterView.TableViewReuseIdentifier) as? TextTableFooterView else {
+            return nil
+        }
+
+        footerView.titleLabel.text = footerTitle
+
+        return footerView
+    }
+
+    public func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
         if let view = view as? TableHeaderFooterView {
             view.willDisplay(inTableView: tableView, usesFullWidth: self.usesFullWidth)
         }
