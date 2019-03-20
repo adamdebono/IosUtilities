@@ -1,5 +1,13 @@
 import UIKit
 
+public enum FocusState {
+    case normal
+    case focused
+    case subviewFocused
+    case pressed
+    case playPressed
+}
+
 open class Control: UIControl,
     FontTraitEnvironment, UserInterfaceStyleTraitEnvironment {
 

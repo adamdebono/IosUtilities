@@ -80,6 +80,113 @@ open class CollectionViewCell<Model: CollectionViewCellModel>: UICollectionViewC
         }
     }
 
+    // MARK: - Focus
+
+    #if os(tvOS)
+
+    public private(set) var focusState: FocusState = .normal {
+        didSet {
+            self.applyFocusState()
+        }
+    }
+
+    open func applyFocusState(animated: Bool = true) {}
+
+    open override func didUpdateFocus(in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+        super.didUpdateFocus(in: context, with: coordinator)
+
+        if context.nextFocusedView == self {
+            if self.focusState != .focused {
+                if #available(tvOS 11.0, *) {
+                    coordinator.addCoordinatedFocusingAnimations({ (context) in
+                        self.focusState = .focused
+                    }, completion: nil)
+                } else {
+                    coordinator.addCoordinatedAnimations({
+                        self.focusState = .focused
+                    }, completion: nil)
+                }
+            }
+        } else if let nextFocusedView = context.nextFocusedView, nextFocusedView.isDescendant(of: self) {
+            if self.focusState != .focused {
+                if #available(tvOS 11.0, *) {
+                    coordinator.addCoordinatedFocusingAnimations({ (context) in
+                        self.focusState = .subviewFocused
+                    }, completion: nil)
+                } else {
+                    coordinator.addCoordinatedAnimations({
+                        self.focusState = .subviewFocused
+                    }, completion: nil)
+                }
+            }
+        } else {
+            if self.focusState != .normal {
+                if #available(tvOS 11.0, *) {
+                    coordinator.addCoordinatedUnfocusingAnimations({ (context) in
+                        self.focusState = .normal
+                    }, completion: nil)
+                } else {
+                    coordinator.addCoordinatedAnimations({
+                        self.focusState = .normal
+                    }, completion: nil)
+                }
+            }
+        }
+    }
+
+    open override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesBegan(presses, with: event)
+
+        guard let press = presses.first else { return }
+        switch press.type {
+        case .select:
+            UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .allowAnimatedContent, animations: {
+                self.focusState = .pressed
+            }, completion: nil)
+        case .playPause:
+            UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .allowAnimatedContent, animations: {
+                self.focusState = .playPressed
+            }, completion: nil)
+        default:
+            break
+        }
+    }
+    open override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesEnded(presses, with: event)
+
+        guard let press = presses.first else { return }
+        switch press.type {
+        case .select, .playPause:
+            UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .allowAnimatedContent, animations: {
+                self.focusState = .focused
+            }, completion: nil)
+        default:
+            break
+        }
+    }
+    open override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesCancelled(presses, with: event)
+
+        guard let press = presses.first else { return }
+        switch press.type {
+        case .select, .playPause:
+            UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .allowAnimatedContent, animations: {
+                self.focusState = .focused
+            }, completion: nil)
+        default:
+            break
+        }
+    }
+
+    @available(tvOS 11.0, *)
+    open override func soundIdentifierForFocusUpdate(in context: UIFocusUpdateContext) -> UIFocusSoundIdentifier? {
+        guard context.nextFocusedView == self else { return nil }
+
+        return .default
+    }
+
+    #endif
+
     // MARK: - 3D Touch Previewing
 
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
