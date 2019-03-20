@@ -1,5 +1,9 @@
 import UIKit
 
+public protocol ActivityIndicatorControllerExtensions {
+    func extend_createIndicator() -> UIView
+}
+
 open class ActivityIndicatorController: UIAlertController {
 
     open override var preferredStyle: UIAlertController.Style {
@@ -48,7 +52,12 @@ open class ActivityIndicatorController: UIAlertController {
     }
 
     open func createIndicator() -> UIView {
-        let indicator = TintedActivityIndicator(style: .whiteLarge)
+        if let extended = self as? ActivityIndicatorControllerExtensions {
+            return extended.extend_createIndicator()
+        }
+
+        let indicator = UIActivityIndicatorView(style: .whiteLarge)
+        indicator.color = .black
         indicator.startAnimating()
         return indicator
     }
@@ -103,13 +112,5 @@ open class ActivityIndicatorController: UIAlertController {
                 constant: 80
             )
         )
-    }
-}
-
-private class TintedActivityIndicator: UIActivityIndicatorView {
-    override func tintColorDidChange() {
-        super.tintColorDidChange()
-
-        self.color = self.tintColor
     }
 }
