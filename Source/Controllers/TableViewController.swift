@@ -60,6 +60,12 @@ open class TableViewController: ViewController, ScrollViewController,
         ])
     }
 
+    open override func viewDidLoad() {
+        self.tableView.register(TextTableHeaderView.self, forHeaderFooterViewReuseIdentifier: TextTableHeaderView.TableViewReuseIdentifier)
+
+        super.viewDidLoad()
+    }
+
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -170,6 +176,56 @@ open class TableViewController: ViewController, ScrollViewController,
 
     open func numberOfSections(in tableView: UITableView) -> Int {
         fatalError("This function must be overridden in a subclass")
+    }
+
+    // MARK: Header
+
+    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return nil
+    }
+
+    open func tableView(_ tableView: UITableView, textForHeaderInSection section: Int) -> String? {
+        return nil
+    }
+
+    open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        #if os(tvOS)
+        if self.tableView(tableView, textForHeaderInSection: section) != nil {
+            return UITableView.automaticDimension
+        } else {
+            return 0.5
+        }
+        #else
+        return UITableView.automaticDimension
+        #endif
+    }
+
+    open func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        return TextTableHeaderView.estimatedHeight
+    }
+
+    open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if let headerTitle = self.tableView(tableView, textForHeaderInSection: section) {
+            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: TextTableHeaderView.TableViewReuseIdentifier) as? TextTableHeaderView else {
+                return nil
+            }
+
+            #if os(iOS)
+            headerView.titleLabel.text = headerTitle.uppercased()
+            #else
+            headerView.titleLabel.text = headerTitle
+            #endif
+
+            return headerView
+        }
+
+        return nil
+    }
+
+    public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let view = view as? TableHeaderFooterView {
+            view.willDisplay(inTableView: tableView, usesFullWidth: self.usesFullWidth)
+        }
     }
 
     // MARK: Cells

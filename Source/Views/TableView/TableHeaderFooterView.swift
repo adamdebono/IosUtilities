@@ -30,4 +30,8 @@ open class TableHeaderFooterView: UITableViewHeaderFooterView,
             self.checkUserInterfaceStyleTraits(from: previousTraitCollection)
         }
     }
+
+    // MARK: -
+
+    open func willDisplay(inTableView tableView: UITableView, usesFullWidth: Bool) {}
 }
