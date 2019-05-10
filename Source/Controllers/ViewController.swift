@@ -5,6 +5,8 @@ public protocol ViewControllerExtensions {
     func extend_viewDidLoad()
     func extend_viewDidAppear(animated: Bool)
 
+    func extend_updateUserInterfaceStyle()
+
     func extend_additionalContentInset(forScrollView scrollView: UIScrollView) -> UIEdgeInsets
 
     #if !os(tvOS)
@@ -171,7 +173,9 @@ open class ViewController: UIViewController,
     // MARK: - Traits
 
     open func updateFonts() {}
-    open func updateUserInterfaceStyle() {}
+    open func updateUserInterfaceStyle() {
+        (self as? ViewControllerExtensions)?.extend_updateUserInterfaceStyle()
+    }
 
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
@@ -188,7 +192,11 @@ open class ViewController: UIViewController,
 
     #if !os(tvOS)
 
+    public private(set) var isPopover: Bool = false
+
     open func prepareForPopover() {
+        self.isPopover = true
+
         (self as? ViewControllerExtensions)?.extend_prepareForPopover()
     }
 
