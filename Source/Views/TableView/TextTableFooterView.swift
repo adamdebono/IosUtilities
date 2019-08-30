@@ -1,5 +1,10 @@
 import UIKit
 
+public protocol TextTableFooterViewExtensions {
+    var extend_titleColor: UIColor { get }
+}
+
+
 open class TextTableFooterView: TableHeaderFooterView {
 
     static var estimatedHeight: CGFloat {
@@ -13,7 +18,6 @@ open class TextTableFooterView: TableHeaderFooterView {
     public override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
-        self.titleLabel.textColor = .darkGray
         self.titleLabel.textAlignment = .left
         self.titleLabel.numberOfLines = 0
         self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -37,5 +41,11 @@ open class TextTableFooterView: TableHeaderFooterView {
         super.updateFonts()
 
         self.titleLabel.font = UIFont.preferred(forTextStyle: .footnote)
+    }
+
+    open override func updateUserInterfaceStyle() {
+        super.updateUserInterfaceStyle()
+
+        self.titleLabel.textColor = (self as? TextTableHeaderViewExtensions)?.extend_titleColor ?? .darkGray
     }
 }
