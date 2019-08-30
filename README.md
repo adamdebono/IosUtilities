@@ -1,2 +1,2 @@
-# IosUtilities
+# UIKitUtilities
 A collection of useful utilities

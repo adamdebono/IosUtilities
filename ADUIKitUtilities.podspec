@@ -7,11 +7,11 @@
 #
 
 Pod::Spec.new do |s|
-  s.name         = "ADIosUtilities"
+  s.name         = "ADUIKitUtilities"
   s.version      = "0.0.1"
   s.summary      = "A collection of useful utilities"
 
-  s.homepage     = "https://github.com/adamdebono/IosUtilities"
+  s.homepage     = "https://github.com/adamdebono/UIKitUtilities"
   s.license      = { :type => "MIT", :file => "LICENSE" }
 
   s.author       = { "Adam Debono" => "me@adamdebono.com" }
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target  = "10.0"
   s.tvos.deployment_target = "10.0"
 
-  s.source       = { :git => "https://github.com/adamdebono/IosUtilities.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/adamdebono/UIKitUtilities.git", :tag => "#{s.version}" }
   s.source_files = "Source/**/*.swift"
 
   s.framework = "Foundation"
