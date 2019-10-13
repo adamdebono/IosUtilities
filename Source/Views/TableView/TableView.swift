@@ -2,6 +2,8 @@ import UIKit
 
 public class TableView: UITableView {
 
+    public static let standardRowHeight: CGFloat = .touchSizeMinimum
+
     public init(frame: CGRect, style: UITableView.Style, usesFullHeight: Bool) {
         self.usesFullHeight = usesFullHeight
 

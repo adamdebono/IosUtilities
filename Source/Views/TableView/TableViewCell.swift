@@ -75,6 +75,15 @@ open class TableViewCell<Model: TableViewCellModel>: UITableViewCell,
         #endif
     }
 
+    @discardableResult
+    open func addMinimumHeightConstraint(_ height: CGFloat = TableView.standardRowHeight) -> NSLayoutConstraint {
+        let constraint = NSLayoutConstraint(item: self.contentView, attribute: .height, relatedBy: .greaterThanOrEqual, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: height)
+        constraint.priority = UILayoutPriority(rawValue: 999)
+        self.contentView.addConstraint(constraint)
+
+        return constraint
+    }
+
     // MARK: - Model
 
     public var model: Model? {
